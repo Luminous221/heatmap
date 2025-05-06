@@ -18,6 +18,34 @@
             background-size: cover;
             border-radius: 50%;
         }
+        /* 弹窗自定义样式 */
+        .amap-info-content {
+            padding: 12px !important;
+            min-width: 280px;
+            border-radius: 8px !important;
+        }
+        .info-image {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .info-title {
+            font-size: 16px;
+            margin: 6px 0;
+            color: #333;
+        }
+        .info-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+        .info-weather {
+            color: #1890ff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -85,8 +113,10 @@
             };
 
             const locations = [
-                { name: "外滩", lat: 31.2415, lng: 121.4904, type: "地标景点" },
-                { name: "南京路步行街", lat: 31.2356, lng: 121.4752, type: "商业休闲" },
+                { name: "外滩", lat: 31.2415, lng: 121.4904, type: "地标景点",
+                desc: "上海最具代表性的滨江景观带，52幢风格迥异的历史建筑群，被誉为'万国建筑博览'。"},
+                { name: "南京路步行街", lat: 31.2356, lng: 121.4752, type: "商业休闲",
+                desc: "中国第一条商业步行街，集购物、餐饮、娱乐于一体，素有'中华商业第一街'美誉。"},
                 { name: "豫园", lat: 31.2279, lng: 121.4873, type: "文化历史" },
                 { name: "上海博物馆", lat: 31.2304, lng: 121.4737, type: "文化历史" },
                 { name: "人民广场", lat: 31.2328, lng: 121.4761, type: "公共空间" },
@@ -129,15 +159,60 @@
                 marker.setMap(map);
                 marker.on('click', () => {
                     AMap.Popup && AMap.Popup.closeAll();
+                    
+                    // 生成天气信息
+                    const weatherData = generateWeather();
+                    
+                    // 生成游玩时间
+                    const playTime = generatePlayTime();
+                    
+                    // 构建弹窗内容
+                    const popupContent = `
+                        <img src="${loc.photo}" class="info-image" 
+                             onerror="this.src='https://dummyimage.com/280x160/eee/999'">
+                        <div class="info-title">${loc.name}</div>
+                        <div>类型：${loc.type}</div>
+                        <div class="info-desc">${loc.desc}</div>
+                        <div class="info-weather">
+                            ${weatherData.icon} ${weatherData.text} | 温度：${weatherData.temp}℃
+                        </div>
+                        <div>预计游玩：${playTime}</div>
+                    `;
+
                     const popup = new AMap.InfoWindow({
-                        content: `<strong>${loc.name}</strong><br/>类型：${loc.type}`,
+                        content: popupContent,
                         offset: new AMap.Pixel(0, -30),
+                        closeWhenClickMap: true
                     });
                     popup.open(map, [loc.lng, loc.lat]);
                 });
             });
         }
+        // 生成天气信息
+        function generateWeather() {
+            const weatherList = [
+                { icon: "☀️", text: "晴天（建议防晒）", min: 20, max: 30 },
+                { icon: "⛅", text: "多云（适宜出行）", min: 18, max: 28 },
+                { icon: "🌧️", text: "小雨（记得带伞）", min: 15, max: 25 },
+                { icon: "🌤️", text: "晴转多云", min: 19, max: 27 }
+            ];
+            const weather = weatherList[Math.floor(Math.random() * weatherList.length)];
+            return {
+                icon: weather.icon,
+                text: weather.text,
+                temp: (Math.random() * (weather.max - weather.min) + weather.min).toFixed(1)
+            };
+        }
 
+        // 生成游玩时间
+        function generatePlayTime() {
+            const minutesOptions = [30, 45, 60, 90, 120, 150, 180];
+            const minutes = minutesOptions[Math.floor(Math.random() * minutesOptions.length)];
+            return minutes < 60 ? 
+                `${minutes}分钟` : 
+                `${Math.floor(minutes/60)}小时${minutes%60 ? `${minutes%60}分钟` : ''}`;
+        }
+        
         function generateHeatmapData() {
             // 这里可以模拟数据变化，实际应用中可以从服务器获取新数据
             return [
