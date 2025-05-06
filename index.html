@@ -53,7 +53,6 @@
     <script>
         // 全局变量存储地图和热力图实例
         let map, heatmap;
-        
         function initMap() {
             AMapLoader.load({
                 key: "22618fee57b96037ee1d10fced0aa5d9",
@@ -65,21 +64,16 @@
                     center: [121.4737, 31.2304],
                     zoom: 12
                 });
-
                 // 初始化热力图
                 initHeatmap(AMap);
-                
                 // 初始化分类标记
                 initMarkers(AMap);
-                
                 // 启动定时刷新
                 setInterval(() => refreshHeatmap(AMap), 5000);
-
             }).catch(e => {
                 console.error("地图加载失败:", e);
             });
         }
-
         function initHeatmap(AMap) {
             // 热力图数据
             const heatmapData = generateHeatmapData();
@@ -103,7 +97,6 @@
                 max: 100
             });
         }
-
         function initMarkers(AMap) {
             const icons = {
                 '地标景点': 'https://cdn-icons-png.flaticon.com/128/18499/18499155.png',
@@ -111,7 +104,6 @@
                 '文化历史': 'https://cdn-icons-png.flaticon.com/128/2346/2346307.png',
                 '公共空间': 'https://cdn-icons-png.flaticon.com/128/2169/2169407.png',
             };
-
             const locations = [
                 { name: "外滩", lat: 31.2415, lng: 121.4904, type: "地标景点",
                 desc: "上海最具代表性的滨江景观带，52幢风格迥异的历史建筑群，被誉为'万国建筑博览'。"},
@@ -174,7 +166,6 @@
                 { name: "光启公园", lat: 31.1978, lng: 121.4315, type: "公共空间",
                 desc: "明代科学家徐光启墓园改建的城市公园，欧洲几何园林与中式碑廊相映，融合科学精神与古典美学的市民休憩地。"}
             ];
-
             locations.forEach(loc => {
                 const iconUrl = icons[loc.type] || icons["地标景点"];
                 const content = `<div class="custom-marker" style="background-image: url('${iconUrl}')"></div>`;
@@ -187,13 +178,10 @@
                 marker.setMap(map);
                 marker.on('click', () => {
                     AMap.Popup && AMap.Popup.closeAll();
-                    
                     // 生成天气信息
                     const weatherData = generateWeather();
-                    
                     // 生成游玩时间
                     const playTime = generatePlayTime();
-                    
                     // 构建弹窗内容
                     const popupContent = `
                         <img src="${loc.photo}" class="info-image" 
@@ -206,7 +194,6 @@
                         </div>
                         <div>预计游玩：${playTime}</div>
                     `;
-
                     const popup = new AMap.InfoWindow({
                         content: popupContent,
                         offset: new AMap.Pixel(0, -30),
@@ -280,7 +267,6 @@
                 count: item.value
             }));
         }
-
         function refreshHeatmap(AMap) {
             // 生成新的热力图数据
             const newData = generateHeatmapData();
@@ -290,10 +276,8 @@
                 data: newData,
                 max: 100
             });
-            
             console.log("热力图数据已刷新", new Date());
         }
-
         // 初始化地图
         initMap();
     </script>
